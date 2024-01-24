@@ -1,8 +1,11 @@
-module github.com/marioevz/eth-clients
+module github.com/taikoxyz/hive-taiko-clients
 
 go 1.20
 
+replace github.com/marioevz/eth-clients => ./
+
 require (
+	github.com/marioevz/eth-clients v0.0.0-20231123180401-b4230c802498
 	github.com/ethereum/go-ethereum v1.13.1
 	github.com/golang-jwt/jwt/v4 v4.5.0
 	github.com/holiman/uint256 v1.2.3
