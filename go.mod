@@ -5,12 +5,12 @@ go 1.20
 replace github.com/marioevz/eth-clients => ./
 
 require (
-	github.com/marioevz/eth-clients v0.0.0-20231123180401-b4230c802498
-	github.com/ethereum/go-ethereum v1.13.1
+	github.com/ethereum/go-ethereum v1.11.5
 	github.com/golang-jwt/jwt/v4 v4.5.0
 	github.com/holiman/uint256 v1.2.3
+	github.com/marioevz/eth-clients v0.0.0-20231123180401-b4230c802498
 	github.com/protolambda/bls12-381-util v0.0.0-20220416220906-d8552aa452c7
-	github.com/protolambda/eth2api v0.0.0-20230316214135-5f8afbd6d05d
+	//github.com/protolambda/eth2api v0.0.0-20230316214135-5f8afbd6d05d
 	github.com/protolambda/zrnt v0.30.0
 	github.com/protolambda/ztyp v0.2.2
 	github.com/rauljordan/engine-proxy v0.0.0-20230316220057-4c80c36c4c3a
@@ -74,12 +74,13 @@ require (
 	golang.org/x/text v0.12.0 // indirect
 	golang.org/x/tools v0.9.1 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect
+	gopkg.in/natefinch/npipe.v2 v2.0.0-20160621034901-c1b8fa8bdcce // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	rsc.io/tmplfunc v0.0.3 // indirect
 )
 
 replace github.com/protolambda/zrnt => github.com/marioevz/zrnt v0.26.2-0.20231109183115-d2098ec1f42c
 
-replace github.com/protolambda/eth2api => github.com/marioevz/eth2api v0.0.0-20230922201437-72bd1301e033
+//replace github.com/protolambda/eth2api => github.com/marioevz/eth2api v0.0.0-20230922201437-72bd1301e033
 
 replace github.com/protolambda/ztyp => github.com/marioevz/ztyp v0.0.0-20231106221254-dd6f24f13fd9

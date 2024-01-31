@@ -18,9 +18,9 @@ import (
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/ethereum/go-ethereum/rpc"
 	"github.com/golang-jwt/jwt/v4"
-	"github.com/marioevz/eth-clients/clients"
-	"github.com/marioevz/eth-clients/clients/utils"
 	spoof "github.com/rauljordan/engine-proxy/proxy"
+	"github.com/taikoxyz/hive-taiko-clients/clients"
+	"github.com/taikoxyz/hive-taiko-clients/clients/utils"
 )
 
 const (
@@ -386,36 +386,36 @@ func (en *ExecutionClient) EngineForkchoiceUpdated(
 	return &result, err
 }
 
-func (en *ExecutionClient) EngineGetPayload(
-	parentCtx context.Context,
-	payloadID *api.PayloadID,
-	version int,
-) (*api.ExecutableData, *big.Int, *api.BlobsBundleV1, *bool, error) {
-	var (
-		rpcString = fmt.Sprintf("engine_getPayloadV%d", version)
-	)
-
-	if err := en.PrepareDefaultAuthCallToken(); err != nil {
-		return nil, nil, nil, nil, err
-	}
-
-	ctx, cancel := context.WithTimeout(parentCtx, time.Second*10)
-	defer cancel()
-	if version >= 2 {
-		var response api.ExecutionPayloadEnvelope
-		err := en.engineRpcClient.CallContext(
-			ctx,
-			&response,
-			rpcString,
-			payloadID,
-		)
-		return response.ExecutionPayload, response.BlockValue, response.BlobsBundle, &response.Override, err
-	} else {
-		var executableData api.ExecutableData
-		err := en.engineRpcClient.CallContext(ctx, &executableData, rpcString, payloadID)
-		return &executableData, common.Big0, nil, nil, err
-	}
-}
+//func (en *ExecutionClient) EngineGetPayload(
+//	parentCtx context.Context,
+//	payloadID *api.PayloadID,
+//	version int,
+//) (*api.ExecutableData, *big.Int, *api.BlobsBundleV1, *bool, error) {
+//	var (
+//		rpcString = fmt.Sprintf("engine_getPayloadV%d", version)
+//	)
+//
+//	if err := en.PrepareDefaultAuthCallToken(); err != nil {
+//		return nil, nil, nil, nil, err
+//	}
+//
+//	ctx, cancel := context.WithTimeout(parentCtx, time.Second*10)
+//	defer cancel()
+//	if version >= 2 {
+//		var response api.ExecutionPayloadEnvelope
+//		err := en.engineRpcClient.CallContext(
+//			ctx,
+//			&response,
+//			rpcString,
+//			payloadID,
+//		)
+//		return response.ExecutionPayload, response.BlockValue, response.BlobsBundle, &response.Override, err
+//	} else {
+//		var executableData api.ExecutableData
+//		err := en.engineRpcClient.CallContext(ctx, &executableData, rpcString, payloadID)
+//		return &executableData, common.Big0, nil, nil, err
+//	}
+//}
 
 func (en *ExecutionClient) EngineNewPayload(
 	parentCtx context.Context,

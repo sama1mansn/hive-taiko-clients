@@ -3,13 +3,12 @@ package validator
 import (
 	"fmt"
 
-	"github.com/marioevz/eth-clients/clients"
-	"github.com/marioevz/eth-clients/clients/beacon"
-	"github.com/marioevz/eth-clients/clients/utils"
 	blsu "github.com/protolambda/bls12-381-util"
 	"github.com/protolambda/zrnt/eth2/beacon/common"
 	"github.com/protolambda/zrnt/eth2/beacon/phase0"
 	"github.com/protolambda/ztyp/tree"
+	"github.com/taikoxyz/hive-taiko-clients/clients"
+	"github.com/taikoxyz/hive-taiko-clients/clients/utils"
 )
 
 type ValidatorClient struct {
@@ -17,8 +16,8 @@ type ValidatorClient struct {
 	Logger      utils.Logging
 	ClientIndex int
 
-	Keys         map[common.ValidatorIndex]*ValidatorKeys
-	BeaconClient *beacon.BeaconClient
+	Keys map[common.ValidatorIndex]*ValidatorKeys
+	//BeaconClient *beacon.BeaconClient
 }
 
 func (vc *ValidatorClient) Logf(format string, values ...interface{}) {
