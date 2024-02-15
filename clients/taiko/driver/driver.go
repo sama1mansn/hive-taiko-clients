@@ -23,9 +23,10 @@ type DriverClientConfig struct {
 
 type DriverClient struct {
 	clients.Client
-	Logger  utils.Logging
-	Config  DriverClientConfig
-	Builder interface{}
+	Logger          utils.Logging
+	Config          DriverClientConfig
+	Builder         interface{}
+	startupComplete bool
 }
 
 func (dn *DriverClient) Logf(format string, values ...interface{}) {
@@ -49,6 +50,11 @@ func (dn *DriverClient) Start() error {
 }
 
 func (dn *DriverClient) Init(ctx context.Context) error {
+	if !dn.startupComplete {
+		defer func() {
+			dn.startupComplete = true
+		}()
+	}
 	//if dn.api == nil {
 	//	port := dn.Config.DriverAPIPort
 	//	if port == 0 {

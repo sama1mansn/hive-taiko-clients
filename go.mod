@@ -2,13 +2,13 @@ module github.com/taikoxyz/hive-taiko-clients
 
 go 1.20
 
-replace github.com/marioevz/eth-clients => ./
+//replace github.com/marioevz/eth-clients => ./
 
 require (
 	github.com/ethereum/go-ethereum v1.11.5
 	github.com/golang-jwt/jwt/v4 v4.5.0
 	github.com/holiman/uint256 v1.2.3
-	github.com/marioevz/eth-clients v0.0.0-20231123180401-b4230c802498
+	//github.com/marioevz/eth-clients v0.0.0-20231123180401-b4230c802498
 	github.com/protolambda/bls12-381-util v0.0.0-20220416220906-d8552aa452c7
 	//github.com/protolambda/eth2api v0.0.0-20230316214135-5f8afbd6d05d
 	github.com/protolambda/zrnt v0.30.0

@@ -165,6 +165,17 @@ func (all TaikoNodes) L2ExecutionClients() execution.ExecutionClients {
 	return en
 }
 
+// Return all L1L2 protocol deployer clients, even the ones not currently running
+func (all TaikoNodes) L1L2ProtocolDeployerClients() protocol_deployer.ProtocolDeployerClients {
+	en := make(protocol_deployer.ProtocolDeployerClients, 0)
+	for _, n := range all {
+		if n.L1L2ProtocolDeployerClient != nil {
+			en = append(en, n.L1L2ProtocolDeployerClient)
+		}
+	}
+	return en
+}
+
 // Return all L2 driver clients, even the ones not currently running
 func (all TaikoNodes) L2DriverClients() driver.DriverClients {
 	en := make(driver.DriverClients, 0)

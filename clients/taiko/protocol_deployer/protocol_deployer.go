@@ -24,10 +24,13 @@ type ProtocolDeployerClientConfig struct {
 
 type ProtocolDeployerClient struct {
 	clients.Client
-	Logger  utils.Logging
-	Config  ProtocolDeployerClientConfig
-	Builder interface{}
+	Logger          utils.Logging
+	Config          ProtocolDeployerClientConfig
+	Builder         interface{}
+	startupComplete bool
 }
+
+type ProtocolDeployerClients []*ProtocolDeployerClient
 
 func (pn *ProtocolDeployerClient) Logf(format string, values ...interface{}) {
 	if l := pn.Logger; l != nil {
@@ -50,6 +53,11 @@ func (pn *ProtocolDeployerClient) Start() error {
 }
 
 func (pn *ProtocolDeployerClient) Init(ctx context.Context) error {
+	if !pn.startupComplete {
+		defer func() {
+			pn.startupComplete = true
+		}()
+	}
 	//if pn.api == nil {
 	//	port := pn.Config.ProtocolDeployerAPIPort
 	//	if port == 0 {
@@ -127,8 +135,6 @@ func (pn *ProtocolDeployerClient) Shutdown() error {
 		return managedClient.Shutdown()
 	}
 }
-
-type ProtocolDeployerClients []*ProtocolDeployerClient
 
 // Return subset of clients that are currently running
 func (all ProtocolDeployerClients) Running() ProtocolDeployerClients {

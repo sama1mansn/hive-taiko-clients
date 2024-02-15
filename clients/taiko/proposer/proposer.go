@@ -24,9 +24,10 @@ type ProposerClientConfig struct {
 
 type ProposerClient struct {
 	clients.Client
-	Logger  utils.Logging
-	Config  ProposerClientConfig
-	Builder interface{}
+	Logger          utils.Logging
+	Config          ProposerClientConfig
+	Builder         interface{}
+	startupComplete bool
 }
 
 func (pn *ProposerClient) Logf(format string, values ...interface{}) {
@@ -50,6 +51,11 @@ func (pn *ProposerClient) Start() error {
 }
 
 func (pn *ProposerClient) Init(ctx context.Context) error {
+	if !pn.startupComplete {
+		defer func() {
+			pn.startupComplete = true
+		}()
+	}
 	//if pn.api == nil {
 	//	port := pn.Config.ProposerAPIPort
 	//	if port == 0 {
