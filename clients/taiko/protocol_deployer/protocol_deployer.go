@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"github.com/taikoxyz/hive-taiko-clients/clients"
 	"github.com/taikoxyz/hive-taiko-clients/clients/utils"
+	"net"
+	"time"
 )
 
 const (
@@ -57,6 +59,16 @@ func (pn *ProtocolDeployerClient) Init(ctx context.Context) error {
 		defer func() {
 			pn.startupComplete = true
 		}()
+		for {
+			port := "8545"
+			_, err := net.Dial("tcp", ":"+port)
+			if err == nil {
+				fmt.Printf("Connection on port %s is open\n", port)
+				break
+			}
+			fmt.Printf("Waiting for connection on port %s...\n", port)
+			time.Sleep(5 * time.Second)
+		}
 	}
 	//if pn.api == nil {
 	//	port := pn.Config.ProtocolDeployerAPIPort
