@@ -94,10 +94,10 @@ func (m *ExternalClient) IsRunning() bool {
 		port := "8545"
 		_, err := net.Dial("tcp", ":"+port)
 		if err == nil {
-			fmt.Printf("Connection on port %s is open\n", port)
+			fmt.Printf("(type: %s, host: %s, IP: %s) Connection on port %s is open\n", m.Type, m.Host, m.IP, port)
 			break
 		}
-		fmt.Printf("Waiting for connection on port %s...\n", port)
+		fmt.Printf("(type: %s, host: %s, IP: %s) Waiting for connection on port %s...\n", m.Type, m.Host, m.IP, port)
 		time.Sleep(5 * time.Second)
 	}
 	return true
