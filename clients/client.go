@@ -9,6 +9,7 @@ import (
 	"net"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type Client interface {
@@ -89,6 +90,16 @@ func ExternalClientFromURL(url string, typ string) (*ExternalClient, error) {
 
 func (m *ExternalClient) IsRunning() bool {
 	// We can try pinging a certain port for status
+	for {
+		port := "8545"
+		_, err := net.Dial("tcp", ":"+port)
+		if err == nil {
+			fmt.Printf("Connection on port %s is open\n", port)
+			break
+		}
+		fmt.Printf("Waiting for connection on port %s...\n", port)
+		time.Sleep(5 * time.Second)
+	}
 	return true
 }
 
