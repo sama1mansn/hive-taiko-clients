@@ -74,6 +74,15 @@ func (n *TaikoNode) Start() error {
 		n.Logf("No L2 driver client started in bundle %d", n.Index)
 	}
 
+	n.Logf("Starting L2 prover client in bundle %d", n.Index)
+	if n.L2ProverClient != nil {
+		if err := n.L2ProverClient.Start(); err != nil {
+			return err
+		}
+	} else {
+		n.Logf("No L2 prover client started in bundle %d", n.Index)
+	}
+
 	n.Logf("Starting L2 proposer client in bundle %d", n.Index)
 	if n.L2ProposerClient != nil {
 		if err := n.L2ProposerClient.Start(); err != nil {
@@ -83,14 +92,6 @@ func (n *TaikoNode) Start() error {
 		n.Logf("No L2 proposer client started in bundle %d", n.Index)
 	}
 
-	n.Logf("Starting L2 prover client in bundle %d", n.Index)
-	if n.L2ProverClient != nil {
-		if err := n.L2ProverClient.Start(); err != nil {
-			return err
-		}
-	} else {
-		n.Logf("No L2 prover client started in bundle %d", n.Index)
-	}
 	return nil
 }
 
