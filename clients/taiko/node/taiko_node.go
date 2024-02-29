@@ -2,16 +2,20 @@ package node
 
 import (
 	"fmt"
+	"github.com/taikoxyz/hive-taiko-clients/clients/beacon"
 	"github.com/taikoxyz/hive-taiko-clients/clients/execution"
 	"github.com/taikoxyz/hive-taiko-clients/clients/taiko/driver"
 	"github.com/taikoxyz/hive-taiko-clients/clients/taiko/proposer"
 	"github.com/taikoxyz/hive-taiko-clients/clients/taiko/protocol_deployer"
 	"github.com/taikoxyz/hive-taiko-clients/clients/taiko/prover"
 	"github.com/taikoxyz/hive-taiko-clients/clients/utils"
+	"github.com/taikoxyz/hive-taiko-clients/clients/validator"
 )
 
 // A node bundles together:
 // - Running L1/L2 Execution clients
+// - Running L1 Beacon Chain client
+// - Running L1 Validator client
 // - Running Protocol Deployer
 // - Running Driver client
 // - Running Proposer client
@@ -23,6 +27,8 @@ type TaikoNode struct {
 	Index int
 	// Clients that comprise the node
 	L1ExecutionClient          *execution.ExecutionClient
+	L1BeaconChainClient        *beacon.BeaconClient
+	L1ValidatorClient          *validator.ValidatorClient
 	L2ExecutionClient          *execution.ExecutionClient
 	L1L2ProtocolDeployerClient *protocol_deployer.ProtocolDeployerClient
 	L2DriverClient             *driver.DriverClient
@@ -45,6 +51,24 @@ func (n *TaikoNode) Start() error {
 		}
 	} else {
 		n.Logf("No L1 execution client started in bundle %d", n.Index)
+	}
+
+	n.Logf("Starting L1 beacon chain client in bundle %d", n.Index)
+	if n.L1BeaconChainClient != nil {
+		if err := n.L1BeaconChainClient.Start(); err != nil {
+			return err
+		}
+	} else {
+		n.Logf("No L1 beacon chain client started in bundle %d", n.Index)
+	}
+
+	n.Logf("Starting L1 validator client in bundle %d", n.Index)
+	if n.L1ValidatorClient != nil {
+		if err := n.L1ValidatorClient.Start(); err != nil {
+			return err
+		}
+	} else {
+		n.Logf("No L1 validator client started in bundle %d", n.Index)
 	}
 
 	n.Logf("Starting L2 execution client in bundle %d", n.Index)
@@ -99,6 +123,12 @@ func (n *TaikoNode) Shutdown() error {
 	if err := n.L1ExecutionClient.Shutdown(); err != nil {
 		return err
 	}
+	if err := n.L1BeaconChainClient.Shutdown(); err != nil {
+		return err
+	}
+	if err := n.L1ValidatorClient.Shutdown(); err != nil {
+		return err
+	}
 	if err := n.L2ExecutionClient.Shutdown(); err != nil {
 		return err
 	}
@@ -122,6 +152,12 @@ func (n *TaikoNode) ClientNames() string {
 	if n.L1ExecutionClient != nil {
 		name = n.L1ExecutionClient.ClientType()
 	}
+	if n.L1BeaconChainClient != nil {
+		name = fmt.Sprintf("%s/%s", name, n.L1BeaconChainClient.ClientType())
+	}
+	if n.L1ValidatorClient != nil {
+		name = fmt.Sprintf("%s/%s", name, n.L1ValidatorClient.ClientType())
+	}
 	if n.L2ExecutionClient != nil {
 		name = fmt.Sprintf("%s/%s", name, n.L2ExecutionClient.ClientType())
 	}
@@ -138,7 +174,7 @@ func (n *TaikoNode) ClientNames() string {
 }
 
 func (n *TaikoNode) IsRunning() bool {
-	return n.L1ExecutionClient.IsRunning() && n.L2ExecutionClient.IsRunning() && n.L2DriverClient.IsRunning() && n.L2ProposerClient.IsRunning() && n.L2ProverClient.IsRunning()
+	return n.L1ExecutionClient.IsRunning() && n.L1BeaconChainClient.IsRunning() && n.L1ValidatorClient.IsRunning() && n.L2ExecutionClient.IsRunning() && n.L2DriverClient.IsRunning() && n.L2ProposerClient.IsRunning() && n.L2ProverClient.IsRunning()
 }
 
 // Node cluster operations
@@ -150,6 +186,28 @@ func (all TaikoNodes) L1ExecutionClients() execution.ExecutionClients {
 	for _, n := range all {
 		if n.L1ExecutionClient != nil {
 			en = append(en, n.L1ExecutionClient)
+		}
+	}
+	return en
+}
+
+// Return all L1 beacon chain clients, even the ones not currently running
+func (all TaikoNodes) L1BeaconChainClients() beacon.BeaconClients {
+	en := make(beacon.BeaconClients, 0)
+	for _, n := range all {
+		if n.L1BeaconChainClient != nil {
+			en = append(en, n.L1BeaconChainClient)
+		}
+	}
+	return en
+}
+
+// Return all L1 validator clients, even the ones not currently running
+func (all TaikoNodes) L1ValidatorClients() validator.ValidatorClients {
+	en := make(validator.ValidatorClients, 0)
+	for _, n := range all {
+		if n.L1ValidatorClient != nil {
+			en = append(en, n.L1ValidatorClient)
 		}
 	}
 	return en
