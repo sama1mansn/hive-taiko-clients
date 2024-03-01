@@ -5,9 +5,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"net/http"
 	"strings"
-	"sync"
 	"time"
 
 	ethcommon "github.com/ethereum/go-ethereum/common"
@@ -54,7 +52,8 @@ type BeaconClient struct {
 	Config  BeaconClientConfig
 	Builder interface{}
 
-	api *eth2api.Eth2HttpClient
+	api             *eth2api.Eth2HttpClient
+	startupComplete bool
 }
 
 func (bn *BeaconClient) Logf(format string, values ...interface{}) {
@@ -78,73 +77,79 @@ func (bn *BeaconClient) Start() error {
 }
 
 func (bn *BeaconClient) Init(ctx context.Context) error {
-	if bn.api == nil {
-		port := bn.Config.BeaconAPIPort
-		if port == 0 {
-			port = PortBeaconAPI
-		}
-		bn.api = &eth2api.Eth2HttpClient{
-			Addr:  bn.GetAddress(),
-			Cli:   &http.Client{},
-			Codec: eth2api.JSONCodec{},
-		}
-	}
-
-	var wg sync.WaitGroup
-	var errs = make(chan error, 2)
-	if bn.Config.Spec == nil {
-		// Try to fetch config directly from the client
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
-			for {
-				if cfg, err := bn.BeaconConfig(ctx); err == nil && cfg != nil {
-					if spec, err := SpecFromConfig(cfg); err != nil {
-						errs <- err
-						return
-					} else {
-						bn.Config.Spec = spec
-						return
-					}
-				}
-				select {
-				case <-ctx.Done():
-					errs <- ctx.Err()
-					return
-				case <-time.After(time.Second):
-				}
-			}
+	if !bn.startupComplete {
+		defer func() {
+			bn.startupComplete = true
 		}()
 	}
-
-	if bn.Config.GenesisTime == nil || bn.Config.GenesisValidatorsRoot == nil {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
-			for {
-				if gen, err := bn.GenesisConfig(ctx); err == nil &&
-					gen != nil {
-					bn.Config.GenesisTime = &gen.GenesisTime
-					bn.Config.GenesisValidatorsRoot = &gen.GenesisValidatorsRoot
-					return
-				}
-				select {
-				case <-ctx.Done():
-					errs <- ctx.Err()
-					return
-				case <-time.After(time.Second):
-				}
-			}
-		}()
-	}
-	wg.Wait()
-
-	select {
-	case err := <-errs:
-		return err
-	default:
-		return nil
-	}
+	return nil
+	//if bn.api == nil {
+	//	port := bn.Config.BeaconAPIPort
+	//	if port == 0 {
+	//		port = PortBeaconAPI
+	//	}
+	//	bn.api = &eth2api.Eth2HttpClient{
+	//		Addr:  bn.GetAddress(),
+	//		Cli:   &http.Client{},
+	//		Codec: eth2api.JSONCodec{},
+	//	}
+	//}
+	//
+	//var wg sync.WaitGroup
+	//var errs = make(chan error, 2)
+	//if bn.Config.Spec == nil {
+	//	// Try to fetch config directly from the client
+	//	wg.Add(1)
+	//	go func() {
+	//		defer wg.Done()
+	//		for {
+	//			if cfg, err := bn.BeaconConfig(ctx); err == nil && cfg != nil {
+	//				if spec, err := SpecFromConfig(cfg); err != nil {
+	//					errs <- err
+	//					return
+	//				} else {
+	//					bn.Config.Spec = spec
+	//					return
+	//				}
+	//			}
+	//			select {
+	//			case <-ctx.Done():
+	//				errs <- ctx.Err()
+	//				return
+	//			case <-time.After(time.Second):
+	//			}
+	//		}
+	//	}()
+	//}
+	//
+	//if bn.Config.GenesisTime == nil || bn.Config.GenesisValidatorsRoot == nil {
+	//	wg.Add(1)
+	//	go func() {
+	//		defer wg.Done()
+	//		for {
+	//			if gen, err := bn.GenesisConfig(ctx); err == nil &&
+	//				gen != nil {
+	//				bn.Config.GenesisTime = &gen.GenesisTime
+	//				bn.Config.GenesisValidatorsRoot = &gen.GenesisValidatorsRoot
+	//				return
+	//			}
+	//			select {
+	//			case <-ctx.Done():
+	//				errs <- ctx.Err()
+	//				return
+	//			case <-time.After(time.Second):
+	//			}
+	//		}
+	//	}()
+	//}
+	//wg.Wait()
+	//
+	//select {
+	//case err := <-errs:
+	//	return err
+	//default:
+	//	return nil
+	//}
 }
 
 func (bn *BeaconClient) Shutdown() error {
