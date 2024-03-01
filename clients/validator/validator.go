@@ -32,10 +32,10 @@ func (vc *ValidatorClient) Logf(format string, values ...interface{}) {
 
 func (vc *ValidatorClient) Start() error {
 	if !vc.Client.IsRunning() {
-		if len(vc.Keys) == 0 {
-			vc.Logf("Skipping validator because it has 0 validator keys")
-			return nil
-		}
+		//if len(vc.Keys) == 0 {
+		//	vc.Logf("Skipping validator because it has 0 validator keys")
+		//	return nil
+		//}
 		if managedClient, ok := vc.Client.(clients.ManagedClient); !ok {
 			return fmt.Errorf("attempted to start an unmanaged client")
 		} else {
