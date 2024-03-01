@@ -2,7 +2,6 @@ package validator
 
 import (
 	"fmt"
-
 	blsu "github.com/protolambda/bls12-381-util"
 	"github.com/protolambda/zrnt/eth2/beacon/common"
 	"github.com/protolambda/zrnt/eth2/beacon/phase0"
@@ -11,12 +10,17 @@ import (
 	"github.com/taikoxyz/hive-taiko-clients/clients/utils"
 )
 
+type ValidatorClientConfig struct {
+	ClientIndex int
+	Subnet      string
+}
+
 type ValidatorClient struct {
 	clients.Client
 	Logger      utils.Logging
 	ClientIndex int
-
-	Keys map[common.ValidatorIndex]*ValidatorKeys
+	Config      ValidatorClientConfig
+	Keys        map[common.ValidatorIndex]*ValidatorKeys
 	//BeaconClient *beacon.BeaconClient
 }
 
